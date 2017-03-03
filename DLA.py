@@ -142,27 +142,32 @@ class DLA():
 
 		
 
+	# Run for N particles 
+	def Run_simulation(self):
+
+		for i in range(0,self.num):
+			self.Intro_New_Particle()
+			self.stuck = False
+
+			while(self.stuck == False):
+				self.random_step(self.row,self.col)
 
 
-	# def Run_simulation(self):
-
-	# 	for i in range(0,self.num):
-	# 		self.stuck = False
-
-	# 		while(!self.stuck):
-	# 			self.Intro_New_Particle()
-
-
-
-
-
-
-
-
-
-
-
+'''
+FOR DLA
+INPUT:
+1st Parameter : Dimention M (odd) of  M X M Matrix
+2nd Parameter : Number of Particles
+3rd Parameter : Stickiness from [0,1]
+'''
 
 if __name__=='__main__':
-	a = DLA(5,1,1)
-	a.random_step(0,0)		
+	d = DLA(101,4000,1)
+	d.Run_simulation()
+
+
+
+
+
+
+
