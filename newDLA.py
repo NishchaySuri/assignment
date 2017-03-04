@@ -181,13 +181,21 @@ class DLA():
 		for i in range(0,self.num):
 			if(i%50 == 0):
 				print i
-			self.Intro_New_Particle(101)
-			if(d.row>=400 or d.col>=400):
-				print "ERROR"
-			self.stuck = False
 
-			while(self.stuck == False):
-				self.random_step(self.row,self.col,101)
+			if i<=700:
+				self.Intro_New_Particle(101)
+				self.stuck = False
+
+				while(self.stuck == False):
+					self.random_step(self.row,self.col,101)
+
+			if i>700 and i<=1900:
+				self.Intro_New_Particle(201)
+				self.stuck = False
+
+				while(self.stuck == False):
+					self.random_step(self.row,self.col,201)
+
 
 
 
@@ -200,24 +208,9 @@ INPUT:
 2nd Parameter : Number of Particles
 3rd Parameter : Stickiness from [0,1]
 '''
-def Diffusion_Limited_Aggregation(M,number,stickiness,matrix):
-	instance_list=[]
-	r_bigCenter = (M-1)/2
-	c_bigCenter = (M-1)/2
-
-	if M <= 101:
-		d = DLA(M,number,stickiness)
-		d.Run_simulation()
-		d.plot()
-		return
-
-
-
-
-
 
 if __name__=='__main__':
-	d = DLA(501,700,1)
+	d = DLA(501,1700,1)
 	start = time.time()
 	d.Run_simulation()
 	end = time.time()
