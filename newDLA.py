@@ -9,7 +9,7 @@ Diffusion Limited Aggregation (DLA)
 155120029
 Department of Physics
 '''
-import time
+from timeit import default_timer as timer
 import numpy as np
 import random as rnd
 import matplotlib.pyplot as plt
@@ -49,18 +49,27 @@ class DLA():
 
 	# Plots the pixels on image using Matrix
 	def plot(self):
-		plt.imshow(self.Matrix)
+		plt.imshow(self.Matrix,cmap='gray')
 		plt.show()
 
 
 
 	''' 
-		|->
-		#######
-		#	  #
-		#     #   Intro_New_Particle = Introduces new particle along the border of Matrix
-		#     #
-		#######
+	#################
+	#				#
+	#				#
+	#	|->			#
+	#	 #######	#
+	#	 #	   #	#
+	#	 #  1  #    #    Intro_New_Particle = Introduces new particle along the border of inner matrix (dim_temp X dim_temp)
+	#	 #     #	#						  The dimention changes changes as the simulation grows
+	#	 #######	#
+	#				#
+	#				#
+	#				#
+	#################
+					 M X M
+
 	
 	'''
 	def Intro_New_Particle(self,dim_temp): # Randomly introduces a new particle along the border of dim_temp around the bigger matrix
@@ -97,7 +106,7 @@ class DLA():
 			if(element == 0):
 				self.Matrix[self.row,self.col] = 1
 				flag = False
-
+				break
 
 
 
@@ -105,7 +114,6 @@ class DLA():
 	# Randomly introduces a new particle anywhere in the matrix (To increase efficiency)
 	def Intro_New_Particle_anywhere(self):
 		flag = True
-
 		while(flag):
 			rnd_row = rnd.randint(0,self.M-1)
 			rnd_col = rnd.randint(0,self.M-1)
@@ -138,21 +146,21 @@ class DLA():
 
 
 
+
 	# Takes a random step from the element (row,col) by checking all adjacent cells and updates (self.row,self.col)
 	def random_step(self,row,col,dim_temp):
 		flag = False							# Flag turns True when a neighbouring cell has element 1
 		self.adj = self.get_adjacent(row,col,dim_temp)
 
-		# Counting number of neighbours having element 1 
-		list_elements = []   					
+		# If a neighbouring cell has element 1
 		for elem in self.adj:
 			if(self.Matrix[elem[0],elem[1]] == 1):
 				flag = True
-				list_elements.append(elem)    
+				break  
 		
 
 		# Removes the elements from adjacency list which has element 1
-		self.adj = np.delete(self.adj,list_elements,0) 
+		#self.adj = np.delete(self.adj,list_elements,0) 
 
 
 		# If no neighbouring element is 1 
@@ -163,11 +171,15 @@ class DLA():
 			self.Matrix[self.row,self.col] = 1
 		
 		# If a neighbouring element is 1 and particle does not stick probabilistically
-		elif(flag == True and rnd.random() > self.stickiness and len(self.adj)!=0):
-			num = rnd.randint(0,len(self.adj)-1)
-			self.Matrix[row,col] = 0
-			self.row , self.col = self.adj[num]
-			self.Matrix[self.row,self.col] = 1
+		elif(flag == True and rnd.random() > self.stickiness):
+			l=[]
+			for eme in self.adj:
+				if(self.Matrix[elem[0],elem[1]] == 0):
+					l.append([elem[0],elem[1]])
+					num = rnd.randint(0,len(l)-1)
+					self.Matrix[row,col] = 0
+					self.row , self.col = l[num]
+					self.Matrix[self.row,self.col] = 1
 		
 		else:
 			self.stuck = True
@@ -179,23 +191,50 @@ class DLA():
 	# Run for N particles 
 	def Run_simulation(self):
 		for i in range(0,self.num):
-			if(i%50 == 0):
-				print i
+			if(i%100 == 0):
+			 	print i
 
-			if i<=700:
+			if i<=100:
+				self.Intro_New_Particle(51)
+				self.stuck = False
+
+				while(self.stuck == False):
+					self.random_step(self.row,self.col,51)
+
+			elif i>100 and i<=600:
 				self.Intro_New_Particle(101)
 				self.stuck = False
 
 				while(self.stuck == False):
 					self.random_step(self.row,self.col,101)
 
-			if i>700 and i<=1900:
+			elif i>600 and i<=2500:
 				self.Intro_New_Particle(201)
 				self.stuck = False
 
 				while(self.stuck == False):
 					self.random_step(self.row,self.col,201)
 
+			elif i>2500 and i<=4500:
+				self.Intro_New_Particle(301)
+				self.stuck = False
+
+				while(self.stuck == False):
+					self.random_step(self.row,self.col,301)
+
+			elif i>4500 and i<=9000:
+				self.Intro_New_Particle(401)
+				self.stuck = False
+
+				while(self.stuck == False):
+					self.random_step(self.row,self.col,401)
+
+			elif i>9000:
+				self.Intro_New_Particle(501)
+				self.stuck = False
+
+				while(self.stuck == False):
+					self.random_step(self.row,self.col,501)
 
 
 
@@ -210,10 +249,11 @@ INPUT:
 '''
 
 if __name__=='__main__':
-	d = DLA(501,1700,1)
-	start = time.time()
+	d = DLA(501,10000,1)
+	start = timer()
 	d.Run_simulation()
-	end = time.time()
+	end = timer()
+	np.savetxt('matrix.txt',d.Matrix,fmt='%d')
 
 	print("Time elapsed {}".format(end-start))
 
