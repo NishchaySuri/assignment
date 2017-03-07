@@ -5,9 +5,13 @@ Diffusion Limited Aggregation (DLA)
 - Matrix M X M where M is an odd integer
 - Image is toroidally bound
 
+
+------>(For present configuration it takes approx 10 mins for 20,000 particles in 501 X 501 matrix)
+
 -Nishchay Suri
 155120029
 Department of Physics
+IIT Bombay
 '''
 from timeit import default_timer as timer
 import numpy as np
@@ -37,6 +41,8 @@ class DLA():
 																					   ####################################################	
 	4th Parameter : Measure of distance of innter matrix from the structure (dist)  <- # Responsible for efficiency and quality of figure #
 																					   ####################################################
+					
+
 					We take an inner matrix within the bigger M X M matrix. We introduce particles along it's border as it is closer to the structure. 
 					After every few iterations we calculate the farthest point of the structure and introduce this border at a (dist) distance away.
 
@@ -230,8 +236,6 @@ class DLA():
 		dim_temp = 51
 		for i in range(0,self.num):
 			if(i%100 == 0):
-				print i,dim_temp
-
 				if dim_temp < d.max_dimention:
 					dim_temp = max(dim_temp, self.dist + 2* np.abs((max(self.max_row,self.max_col) - self.row_centre)))
 				else:
@@ -255,7 +259,7 @@ INPUT:
 '''
 
 if __name__=='__main__':
-	d = DLA(501,20000,1,51)
+	d = DLA(501,20000,1,41)
 
 	start = timer()
 	d.Run_simulation()
